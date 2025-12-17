@@ -51,7 +51,6 @@ ORDER BY
 Q2: Allocated hours per teacher per course instance (current year)
 
 
-
 SELECT
     cl.course_code,
     ci.instance_id                         AS course_instance_id,
@@ -76,20 +75,14 @@ SELECT
 
     SUM(a.allocated_hours * COALESCE(ta.factor, 1)) AS total_hours
 FROM allocation a
-JOIN course_instance ci
-  ON ci.instance_id = a.instance_id
-JOIN course_layout cl
-  ON cl.layout_id = ci.layout_id
-JOIN teaching_activity ta
-  ON ta.teaching_activity_id = a.teaching_activity_id
-JOIN employee e
-  ON e.emp_id = a.emp_id
-JOIN person p
-  ON p.personal_number = e.personal_number
-JOIN job_title jt
-  ON jt.job_title_id = e.job_title_id
-WHERE ci.study_year = EXTRACT(YEAR FROM CURRENT_DATE)   
-
+JOIN course_instance ci  ON ci.instance_id = a.instance_id
+JOIN course_layout cl    ON cl.layout_id   = ci.layout_id
+JOIN teaching_activity ta ON ta.teaching_activity_id = a.teaching_activity_id
+JOIN employee e          ON e.emp_id = a.emp_id
+JOIN person p            ON p.personal_number = e.personal_number
+JOIN job_title jt        ON jt.job_title_id = e.job_title_id
+WHERE ci.study_year = (SELECT MAX(study_year) FROM course_instance)
+-- AND ci.instance_id = 101   -- (valfritt) för “en” course instance
 GROUP BY
     cl.course_code,
     ci.instance_id,
@@ -100,6 +93,7 @@ ORDER BY
     cl.course_code,
     ci.instance_id,
     teacher_name;
+
 
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
