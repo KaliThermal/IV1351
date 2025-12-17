@@ -117,3 +117,4 @@ CREATE TABLE allocation (
 ALTER TABLE department
 ADD CONSTRAINT fk_department_manager_emp
 FOREIGN KEY (manager_emp) REFERENCES employee(emp_id);
+
